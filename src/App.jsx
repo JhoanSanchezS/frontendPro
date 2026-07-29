@@ -21,6 +21,7 @@ function App() {
         <p style={{ color: 'green', fontWeight: 'bold' }}>
           {mensajeBackend ? mensajeBackend : 'Cargando...'}
         </p>
+        <p>Jhoan</p>
       </div>
     </div>
   )
