@@ -22,11 +22,14 @@ const Registro = () => {
     e.preventDefault();
     setMensaje({ texto: 'Procesando...', tipo: 'info' });
 
-    try {
+try {
       const respuesta = await fetch('http://localhost:5000/api/usuarios/registro', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({ 
+          ...formData, 
+          correo: formData.correo.toLowerCase() // Convierte el correo a minúsculas
+        }),
       });
 
       const datos = await respuesta.json();
