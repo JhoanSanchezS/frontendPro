@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { obtenerConsejo } from './MotorConcientizacion';
 
 const FormularioConsumo = () => {
   const navigate = useNavigate();
@@ -66,18 +67,36 @@ const FormularioConsumo = () => {
         body: JSON.stringify(datosAEnviar),
       });
 
-      if (respuesta.ok) {
-        setMensaje({ texto: 'Recibo guardado exitosamente.', tipo: 'exito' });
-        // Limpiamos los campos numéricos y de fecha, pero mantenemos el servicio
-        setFormData({ tipoServicio: servicioActual, cantidadConsumida: '', costoFactura: '', mesRegistrado: '' });
-      } else {
-        setMensaje({ texto: 'Hubo un error al guardar los datos.', tipo: 'error' });
-      }
-    } catch (error) {
-      console.error("Error al guardar:", error);
-      setMensaje({ texto: 'No se pudo conectar con el servidor.', tipo: 'error' });
-    }
-  };
+ if (respuesta.ok) {
+  const consejo = obtenerConsejo(servicioActual);
+
+  setMensaje({
+    texto: `Recibo guardado exitosamente. ${consejo}`,
+    tipo: 'exito'
+  });
+
+  // Limpiamos los campos numéricos y de fecha, pero mantenemos el servicio
+  setFormData({
+    tipoServicio: servicioActual,
+    cantidadConsumida: '',
+    costoFactura: '',
+    mesRegistrado: ''
+  });
+} else {
+  setMensaje({
+    texto: 'Hubo un error al guardar los datos.',
+    tipo: 'error'
+  });
+}
+} catch (error) {
+  console.error("Error al guardar:", error);
+
+  setMensaje({
+    texto: 'No se pudo conectar con el servidor.',
+    tipo: 'error'
+  });
+}
+};
 
   return (
     <div style={{ maxWidth: '500px', margin: '40px auto', padding: '30px', backgroundColor: '#f9f9f9', borderRadius: '12px', boxShadow: '0 4px 10px rgba(0,0,0,0.1)' }}>
