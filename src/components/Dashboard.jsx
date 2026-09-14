@@ -16,7 +16,8 @@ const Dashboard = () => {
   const [recibos, setRecibos] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [mensaje, setMensaje] = useState({ texto: '', tipo: '' });
-
+  const [filtroServicio, setFiltroServicio] = useState('Todos');
+  
   useEffect(() => {
     cargarRecibos();
   }, []);
@@ -98,8 +99,30 @@ const Dashboard = () => {
   return (
     <div style={{ maxWidth: '900px', margin: '40px auto', padding: '30px', backgroundColor: '#f9f9f9', borderRadius: '12px', boxShadow: '0 4px 15px rgba(0,0,0,0.1)' }}>
       
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-        <h2 style={{ color: '#2c3e50', margin: 0 }}>Panel de Control y Consumo</h2>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px' }}>
+        <div>
+          <h2 style={{ color: '#2c3e50', margin: '0 0 15px 0' }}>Panel de Control y Consumo</h2>
+          <div>
+            <label style={{ fontWeight: 'bold', color: '#34495e', marginRight: '10px' }}>
+              Filtrar por servicio:
+            </label>
+            <select
+              value={filtroServicio}
+              onChange={(e) => setFiltroServicio(e.target.value)}
+              style={{
+                padding: '8px 12px',
+                borderRadius: '6px',
+                border: '1px solid #bdc3c7',
+                cursor: 'pointer'
+              }}
+            >
+              <option value="Todos">Todos</option>
+              <option value="Agua">Agua</option>
+              <option value="Energía">Energía</option>
+              <option value="Gas">Gas</option>
+            </select>
+          </div>
+        </div>
         <Link to="/menu" style={{ padding: '10px 15px', backgroundColor: '#3498db', color: 'white', textDecoration: 'none', borderRadius: '6px', fontWeight: 'bold' }}>
           Volver al Menú
         </Link>
@@ -145,7 +168,7 @@ const Dashboard = () => {
             </div>
           </div>
 
-          {/* SECCIÓN DE TABLA */}
+          {/* SECCIÓN DE TABLA CON FILTRO */}
           <div style={{ overflowX: 'auto' }}>
             <h3 style={{ margin: '0 0 15px 0', color: '#34495e', fontSize: '18px' }}>Detalle de Recibos Registrados</h3>
             <table style={{ width: '100%', borderCollapse: 'collapse', backgroundColor: 'white', borderRadius: '8px', overflow: 'hidden', boxShadow: '0 2px 8px rgba(0,0,0,0.05)' }}>
@@ -159,8 +182,10 @@ const Dashboard = () => {
                 </tr>
               </thead>
               <tbody>
-                {recibos.map((recibo) => (
-                  <tr key={recibo._id} style={{ borderBottom: '1px solid #ecf0f1' }}>
+                {recibos
+                  .filter((recibo) => filtroServicio === 'Todos' || recibo.tipoServicio === filtroServicio)
+                  .map((recibo) => (
+                  <tr key={recibo._id} style={{ borderBottom: '1px solid #ecf0f1', transition: 'background-color 0.2s' }}>
                     <td style={{ padding: '15px', color: '#34495e', fontWeight: '500' }}>{recibo.mesRegistrado}</td>
                     
                     <td style={{ padding: '15px' }}>
