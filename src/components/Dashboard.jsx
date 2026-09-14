@@ -6,6 +6,8 @@ const Dashboard = () => {
   const [recibos, setRecibos] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [mensaje, setMensaje] = useState({ texto: '', tipo: '' });
+  const [filtroServicio, setFiltroServicio] = useState('Todos');
+  
 
   useEffect(() => {
     cargarRecibos();
@@ -67,6 +69,27 @@ const Dashboard = () => {
       
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
         <h2 style={{ color: '#2c3e50', margin: 0 }}>Historial de Consumo</h2>
+        <div style={{ marginBottom: '20px' }}>
+  <label style={{ fontWeight: 'bold', color: '#34495e', marginRight: '10px' }}>
+    Filtrar por servicio:
+  </label>
+
+  <select
+    value={filtroServicio}
+    onChange={(e) => setFiltroServicio(e.target.value)}
+    style={{
+      padding: '8px 12px',
+      borderRadius: '6px',
+      border: '1px solid #bdc3c7',
+      cursor: 'pointer'
+    }}
+  >
+    <option value="Todos">Todos</option>
+    <option value="Agua">Agua</option>
+    <option value="Energía">Energía</option>
+    <option value="Gas">Gas</option>
+  </select>
+</div>
         <Link to="/menu" style={{ padding: '10px 15px', backgroundColor: '#3498db', color: 'white', textDecoration: 'none', borderRadius: '6px', fontWeight: 'bold' }}>
           Volver al Menú
         </Link>
@@ -101,8 +124,9 @@ const Dashboard = () => {
               </tr>
             </thead>
             <tbody>
-              {recibos.map((recibo) => (
-                <tr key={recibo._id} style={{ borderBottom: '1px solid #ecf0f1', transition: 'background-color 0.2s' }}>
+{recibos
+  .filter((recibo) => filtroServicio === 'Todos' || recibo.tipoServicio === filtroServicio)
+  .map((recibo) => (                <tr key={recibo._id} style={{ borderBottom: '1px solid #ecf0f1', transition: 'background-color 0.2s' }}>
                   <td style={{ padding: '15px', color: '#34495e', fontWeight: '500' }}>{recibo.mesRegistrado}</td>
                   
                   <td style={{ padding: '15px' }}>
