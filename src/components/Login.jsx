@@ -16,9 +16,11 @@ const Login = () => {
       const respuesta = await fetch('http://localhost:5000/api/usuarios/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ correo, password }),
+        body: JSON.stringify({ 
+          correo: correo.toLowerCase(), // Convierte el correo a minúsculas
+          password 
+        }),
       });
-
       const datos = await respuesta.json();
 
       if (respuesta.ok) {
