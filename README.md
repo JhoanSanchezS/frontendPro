@@ -1,16 +1,63 @@
-# React + Vite
+# PagoHogar
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Aplicación web para registrar y consultar el consumo mensual de agua, energía y gas del hogar. El proyecto está dividido en dos repositorios: este frontend en React y un backend en Express conectado a MongoDB.
 
-Currently, two official plugins are available:
+## Funcionalidades principales
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+1. **Registro de consumo:** permite guardar el consumo, el valor de la factura y el mes. El formulario adapta el servicio y la unidad de medida según la opción seleccionada.
+2. **Historial y análisis:** muestra los recibos registrados, permite filtrar por servicio, eliminar registros y comparar el valor pagado por mes en una gráfica.
+3. **Consejos de ahorro:** presenta recomendaciones para agua, energía y gas; se puede cambiar el servicio y solicitar otro consejo.
 
-## React Compiler
+También incluye registro de cuenta e inicio de sesión.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Tecnologías
 
-## Expanding the ESLint configuration
+- React y Vite
+- React Router para la navegación
+- Recharts para la gráfica del historial
+- API REST desarrollada con Express y MongoDB
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Requisitos
+
+- Node.js y npm
+- El backend de PagoHogar ejecutándose en `http://localhost:5000`
+- MongoDB disponible para el backend
+
+## Instalación y ejecución
+
+Desde la carpeta del frontend:
+
+```bash
+npm install
+npm run dev
+```
+
+Abre la dirección que muestra Vite, normalmente `http://localhost:5173`.
+
+En otra terminal, inicia el backend siguiendo las instrucciones de su README. El frontend envía las peticiones a `http://localhost:5000/api`.
+
+## Rutas principales
+
+| Ruta | Vista |
+| --- | --- |
+| `/` | Inicio de sesión |
+| `/registro` | Crear cuenta |
+| `/menu` | Acciones principales y consejos de ahorro |
+| `/registro-agua` | Registrar consumo de agua |
+| `/registro-energia` | Registrar consumo de energía |
+| `/registro-gas` | Registrar consumo de gas |
+| `/dashboard` | Gráfica e historial de recibos |
+
+## Estructura del proyecto
+
+- `src/components/`: pantallas y componentes de la aplicación.
+- `src/components/MotorConcientizacion.js`: recomendaciones organizadas por servicio.
+- `src/App.jsx`: definición de rutas.
+- `src/App.css` y `src/index.css`: estilos de la interfaz.
+
+## Comprobaciones disponibles
+
+```bash
+npm run lint
+npm run build
+```

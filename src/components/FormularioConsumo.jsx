@@ -125,6 +125,7 @@ const FormularioConsumo = () => {
           <input 
             type="number" 
             step="any" 
+            min="0"
             name="cantidadConsumida" 
             value={formData.cantidadConsumida} 
             onChange={handleChange} 
@@ -138,6 +139,7 @@ const FormularioConsumo = () => {
           Valor total a pagar ($):
           <input 
             type="number" 
+            min="0"
             name="costoFactura" 
             value={formData.costoFactura} 
             onChange={handleChange} 
