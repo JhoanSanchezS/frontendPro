@@ -1,9 +1,12 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { obtenerConsejo } from './MotorConcientizacion';
 
 const MenuPrincipal = () => {
   const navigate = useNavigate();
   const [nombreUsuario, setNombreUsuario] = useState('');
+  const [servicioConsejo, setServicioConsejo] = useState('Agua');
+  const [consejo, setConsejo] = useState(() => obtenerConsejo('Agua'));
 
   useEffect(() => {
     const usuarioString = localStorage.getItem('usuario');
@@ -18,6 +21,11 @@ const MenuPrincipal = () => {
   const cerrarSesion = () => {
     localStorage.removeItem('usuario');
     navigate('/');
+  };
+
+  const cambiarServicioConsejo = (servicio) => {
+    setServicioConsejo(servicio);
+    setConsejo(obtenerConsejo(servicio));
   };
 
   return (
@@ -42,33 +50,63 @@ const MenuPrincipal = () => {
         ¡Hola, <strong>{nombreUsuario}</strong>! ¿Qué deseas hacer hoy?
       </p>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px', marginBottom: '30px' }}>
-        
-        <Link to="/registro-agua" style={{ textDecoration: 'none' }}>
-          <div style={botonStyle('#3498db')}>
-            Registrar Agua
-          </div>
+      <div className="menu-actions">
+        <Link to="/registro-agua" className="menu-action-card" style={{ '--card-accent': '#61c8f2' }}>
+          <span className="menu-action-card__icon">💧</span>
+          <span className="menu-action-card__title">Registrar Agua</span>
+          <span className="menu-action-card__hint">Controla tu consumo</span>
         </Link>
 
-        <Link to="/registro-energia" style={{ textDecoration: 'none' }}>
-          <div style={botonStyle('#f1c40f')}>
-            Registrar Energía
-          </div>
+        <Link to="/registro-energia" className="menu-action-card" style={{ '--card-accent': '#f7d45b' }}>
+          <span className="menu-action-card__icon">⚡</span>
+          <span className="menu-action-card__title">Registrar Energía</span>
+          <span className="menu-action-card__hint">Anota tu factura</span>
         </Link>
 
-        <Link to="/registro-gas" style={{ textDecoration: 'none' }}>
-          <div style={botonStyle('#e67e22')}>
-            Registrar Gas
-          </div>
+        <Link to="/registro-gas" className="menu-action-card" style={{ '--card-accent': '#ffad72' }}>
+          <span className="menu-action-card__icon">🔥</span>
+          <span className="menu-action-card__title">Registrar Gas</span>
+          <span className="menu-action-card__hint">Lleva el seguimiento</span>
         </Link>
 
-        <Link to="/dashboard" style={{ textDecoration: 'none' }}>
-          <div style={botonStyle('#9b59b6')}>
-            Ver Historial
-          </div>
+        <Link to="/dashboard" className="menu-action-card" style={{ '--card-accent': '#d1a1ff' }}>
+          <span className="menu-action-card__icon">📊</span>
+          <span className="menu-action-card__title">Ver Historial</span>
+          <span className="menu-action-card__hint">Revisa tus registros</span>
         </Link>
-
       </div>
+
+      <section className="consejo-card" aria-labelledby="titulo-consejos">
+        <div className="consejo-card__encabezado">
+          <span className="consejo-card__icono" aria-hidden="true">🌱</span>
+          <div>
+            <span className="consejo-card__etiqueta">PEQUEÑOS CAMBIOS, GRAN IMPACTO</span>
+            <h2 id="titulo-consejos">Consejos para ahorrar</h2>
+          </div>
+        </div>
+        <label className="consejo-card__label" htmlFor="servicio-consejo">Consejos para:</label>
+        <select
+          className="consejo-card__select"
+          id="servicio-consejo"
+          value={servicioConsejo}
+          onChange={(e) => cambiarServicioConsejo(e.target.value)}
+        >
+          <option value="Agua">Agua 💧</option>
+          <option value="Energía">Energía ⚡</option>
+          <option value="Gas">Gas 🔥</option>
+        </select>
+        <div className="consejo-card__mensaje" aria-live="polite">
+          <span className="consejo-card__comilla" aria-hidden="true">“</span>
+          <p>{consejo}</p>
+        </div>
+        <button
+          className="consejo-card__boton"
+          type="button"
+          onClick={() => setConsejo(obtenerConsejo(servicioConsejo))}
+        >
+          <span aria-hidden="true">↻</span> Ver otro consejo
+        </button>
+      </section>
 
       <button 
         onClick={cerrarSesion}
@@ -91,18 +129,5 @@ const MenuPrincipal = () => {
     </div>
   );
 };
-
-const botonStyle = (colorBorde) => ({
-  padding: '25px 15px',
-  backgroundColor: 'rgba(255, 255, 255, 0.9)',
-  color: '#2c3e50',
-  borderRadius: '12px',
-  fontWeight: 'bold',
-  fontSize: '16px',
-  borderBottom: `4px solid ${colorBorde}`,
-  boxShadow: '0 4px 10px rgba(0,0,0,0.1)',
-  transition: 'transform 0.2s',
-  cursor: 'pointer'
-});
 
 export default MenuPrincipal;

@@ -3,26 +3,38 @@ body, html {
   margin: 0;
   padding: 0;
   width: 100%;
-  height: 100%;
+  min-height: 100vh;
   font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 }
 
-/* Creamos el degradado animado con colores eco-friendly (Agua, Energía, Naturaleza) */
+/* Fondo animado eco-friendly (sin flexbox global para permitir scroll) */
 body {
   background: linear-gradient(-45deg, #184e68, #57ca85, #2980b9, #6dd5ed);
   background-size: 400% 400%;
   animation: moverFondo 12s ease infinite;
-  
-  /* Centramos el contenido en la pantalla */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
+  overflow-y: auto; /* Permite el scroll vertical normal */
 }
 
-/* Las instrucciones de cómo se mueve el fondo */
+/* Animación del fondo */
 @keyframes moverFondo {
   0% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
   100% { background-position: 0% 50%; }
+}
+
+/* Contenedor exclusivo para centrar vistas cortas como Login y Registro */
+.auth-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  width: 100%;
+}
+
+/* Contenedor general para el Dashboard / Gráficas / Historial */
+.dashboard-container {
+  max-width: 1000px;
+  margin: 40px auto;
+  padding: 20px;
+  box-sizing: border-box;
 }
