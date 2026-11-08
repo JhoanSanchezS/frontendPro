@@ -1,184 +1,129 @@
 import { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { obtenerConsejo } from './MotorConcientizacion';
 
 const FormularioConsumo = () => {
   const navigate = useNavigate();
-  const location = useLocation(); // Esto nos dice en qué ruta estamos
-
-  // 1. LÓGICA PARA DETECTAR EL SERVICIO Y SU UNIDAD DE MEDIDA
-  let servicioActual = 'Agua';
-  let unidadMedida = 'm³ (Metros cúbicos)';
-  let colorAcento = '#3498db'; // Azul por defecto (Agua)
-
-  if (location.pathname.includes('energia')) {
-    servicioActual = 'Energía';
-    unidadMedida = 'kWh (Kilovatios hora)';
-    colorAcento = '#f1c40f'; // Amarillo para energía
-  } else if (location.pathname.includes('gas')) {
-    servicioActual = 'Gas';
-    unidadMedida = 'm³ (Metros cúbicos)';
-    colorAcento = '#e67e22'; // Naranja para gas
-  }
-
-  const [formData, setFormData] = useState({
-    tipoServicio: servicioActual,
-    cantidadConsumida: '',
-    costoFactura: '',
-    mesRegistrado: ''
-  });
+  const location = useLocation();
+  const [formData, setFormData] = useState({ tipoServicio: 'Agua', cantidadConsumida: '', costoFactura: '', mesRegistrado: '' });
   const [mensaje, setMensaje] = useState({ texto: '', tipo: '' });
 
-  // Si el usuario cambia de página, actualizamos el servicio oculto
+  const servicioActual = location.pathname.includes('energia')
+    ? 'Energía'
+    : location.pathname.includes('gas')
+      ? 'Gas'
+      : 'Agua';
+  const unidadMedida = servicioActual === 'Energía' ? 'kWh' : 'm³';
+
   useEffect(() => {
-    setFormData(prev => ({ ...prev, tipoServicio: servicioActual }));
+    setFormData((prev) => ({ ...prev, tipoServicio: servicioActual }));
   }, [servicioActual]);
 
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setMensaje({ texto: 'Guardando recibo...', tipo: 'info' });
+    setMensaje({ texto: 'Guardando recibo…', tipo: 'info' });
 
     const usuarioString = localStorage.getItem('usuario');
-    
     if (!usuarioString) {
-      setMensaje({ texto: 'Error: Debes iniciar sesión primero.', tipo: 'error' });
-      setTimeout(() => navigate('/'), 2000);
+      setMensaje({ texto: 'Inicia sesión para registrar un recibo.', tipo: 'error' });
+      setTimeout(() => navigate('/'), 1600);
       return;
     }
 
-    const usuarioGuardado = JSON.parse(usuarioString);
-
-    const datosAEnviar = {
-      ...formData,
-      usuario: usuarioGuardado.id
-    };
-
     try {
+      const usuarioGuardado = JSON.parse(usuarioString);
       const respuesta = await fetch('http://localhost:5000/api/consumo', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(datosAEnviar),
+        body: JSON.stringify({ ...formData, usuario: usuarioGuardado.id })
       });
 
- if (respuesta.ok) {
-  const consejo = obtenerConsejo(servicioActual);
-
-  setMensaje({
-    texto: `Recibo guardado exitosamente. ${consejo}`,
-    tipo: 'exito'
-  });
-
-  // Limpiamos los campos numéricos y de fecha, pero mantenemos el servicio
-  setFormData({
-    tipoServicio: servicioActual,
-    cantidadConsumida: '',
-    costoFactura: '',
-    mesRegistrado: ''
-  });
-} else {
-  setMensaje({
-    texto: 'Hubo un error al guardar los datos.',
-    tipo: 'error'
-  });
-}
-} catch (error) {
-  console.error("Error al guardar:", error);
-
-  setMensaje({
-    texto: 'No se pudo conectar con el servidor.',
-    tipo: 'error'
-  });
-}
-};
+      if (respuesta.ok) {
+        const consejo = obtenerConsejo(servicioActual);
+        setMensaje({ texto: `Recibo guardado correctamente. ${consejo}`, tipo: 'success' });
+        setFormData({ tipoServicio: servicioActual, cantidadConsumida: '', costoFactura: '', mesRegistrado: '' });
+      } else {
+        const datos = await respuesta.json();
+        setMensaje({ texto: datos.mensaje || 'Revisa la información e inténtalo de nuevo.', tipo: 'error' });
+      }
+    } catch (error) {
+      console.error('Error al guardar recibo:', error);
+      setMensaje({ texto: 'No se pudo conectar con el servidor.', tipo: 'error' });
+    }
+  };
 
   return (
-    <div style={{ maxWidth: '500px', margin: '40px auto', padding: '30px', backgroundColor: '#f9f9f9', borderRadius: '12px', boxShadow: '0 4px 10px rgba(0,0,0,0.1)' }}>
-      
-      {/* Título dinámico que cambia según el servicio */}
-      <h2 style={{ textAlign: 'center', color: '#2c3e50', marginBottom: '20px' }}>
-        Registrar Recibo de {servicioActual}
-      </h2>
-      
-      {mensaje.texto && (
-        <div style={{ 
-          padding: '10px', marginBottom: '15px', borderRadius: '5px', textAlign: 'center', fontWeight: 'bold',
-          backgroundColor: mensaje.tipo === 'exito' ? '#d4edda' : mensaje.tipo === 'error' ? '#f8d7da' : '#e2e3e5',
-          color: mensaje.tipo === 'exito' ? '#155724' : mensaje.tipo === 'error' ? '#721c24' : '#383d41'
-        }}>
-          {mensaje.texto}
-        </div>
-      )}
+    <div className="app-page">
+      <header className="topbar">
+        <Link className="brand-lockup brand-lockup--dark" to="/menu" aria-label="PagoHogar, menú principal">
+          <span className="brand-mark">P</span>
+          <span>PagoHogar</span>
+        </Link>
+        <Link className="button-quiet" to="/menu"><span aria-hidden="true">←</span> Menú principal</Link>
+      </header>
 
-      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
-        
-        {/* Desaparecimos el select. Ahora es automático según el botón que presionaste */}
+      <main className="content-wrap form-page-wrap">
+        <section className={`service-banner service-banner--${servicioActual.toLowerCase()}`}>
+          <span className="eyebrow">NUEVO REGISTRO</span>
+          <h1>Factura de {servicioActual}</h1>
+          <p>Agrega los datos de tu factura para mantener actualizado el historial de tu hogar.</p>
+        </section>
 
-        <label style={{ fontWeight: 'bold', color: '#34495e' }}>
-          Cantidad consumida en el mes ({unidadMedida}):
-          <input 
-            type="number" 
-            step="any" 
-            min="0"
-            name="cantidadConsumida" 
-            value={formData.cantidadConsumida} 
-            onChange={handleChange} 
-            placeholder="Ej: 120"
-            required 
-            style={{ width: '100%', padding: '12px', marginTop: '8px', borderRadius: '6px', border: `1px solid ${colorAcento}`, boxSizing: 'border-box' }} 
-          />
-        </label>
+        <section className="surface-card consumption-form-card">
+          {mensaje.texto && <div className={`form-alert form-alert--${mensaje.tipo}`} role="status">{mensaje.texto}</div>}
 
-        <label style={{ fontWeight: 'bold', color: '#34495e' }}>
-          Valor total a pagar ($):
-          <input 
-            type="number" 
-            min="0"
-            name="costoFactura" 
-            value={formData.costoFactura} 
-            onChange={handleChange} 
-            placeholder="Ej: 45000"
-            required 
-            style={{ width: '100%', padding: '12px', marginTop: '8px', borderRadius: '6px', border: '1px solid #bdc3c7', boxSizing: 'border-box' }} 
-          />
-        </label>
-
-        <label style={{ fontWeight: 'bold', color: '#34495e' }}>
-          Mes facturado:
-          <input 
-            type="month" 
-            name="mesRegistrado" 
-            value={formData.mesRegistrado} 
-            onChange={handleChange} 
-            required 
-            style={{ width: '100%', padding: '12px', marginTop: '8px', borderRadius: '6px', border: '1px solid #bdc3c7', boxSizing: 'border-box' }} 
-          />
-        </label>
-
-        <button 
-          type="submit" 
-          style={{ 
-            padding: '14px', backgroundColor: colorAcento, color: colorAcento === '#f1c40f' ? '#2c3e50' : 'white', 
-            border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '16px', fontWeight: 'bold', marginTop: '10px' 
-          }}
-        >
-          Guardar Registro
-        </button>
-        
-        <button 
-          type="button" 
-          onClick={() => navigate('/menu')} 
-          style={{ padding: '12px', backgroundColor: '#95a5a6', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '16px', fontWeight: 'bold' }}
-        >
-          Volver al Menú
-        </button>
-      </form>
+          <form onSubmit={handleSubmit} className="form-stack">
+            <div className="field-group">
+              <label htmlFor="consumo-cantidad">Consumo mensual <span>({unidadMedida})</span></label>
+              <input
+                id="consumo-cantidad"
+                type="number"
+                step="any"
+                min="0"
+                name="cantidadConsumida"
+                value={formData.cantidadConsumida}
+                onChange={handleChange}
+                placeholder={unidadMedida === 'kWh' ? 'Ej. 145' : 'Ej. 12'}
+                required
+              />
+            </div>
+            <div className="field-group">
+              <label htmlFor="consumo-costo">Total de la factura <span>(COP)</span></label>
+              <div className="input-prefix-wrap">
+                <span>$</span>
+                <input
+                  id="consumo-costo"
+                  type="number"
+                  min="0"
+                  name="costoFactura"
+                  value={formData.costoFactura}
+                  onChange={handleChange}
+                  placeholder="Ej. 85000"
+                  required
+                />
+              </div>
+            </div>
+            <div className="field-group">
+              <label htmlFor="consumo-mes">Mes facturado</label>
+              <input
+                id="consumo-mes"
+                type="month"
+                name="mesRegistrado"
+                value={formData.mesRegistrado}
+                onChange={handleChange}
+                required
+              />
+            </div>
+            <button className="button-primary" type="submit">Guardar recibo <span aria-hidden="true">→</span></button>
+          </form>
+          <p className="form-note">Los datos se usarán para actualizar la gráfica y el historial de consumo.</p>
+        </section>
+      </main>
+      <footer className="app-footer">PAGOHOGAR <span>·</span> GESTIÓN DE CONSUMO DEL HOGAR</footer>
     </div>
   );
 };

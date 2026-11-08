@@ -1,40 +1,64 @@
-/* Eliminamos los márgenes por defecto */
-body, html {
-  margin: 0;
-  padding: 0;
-  width: 100%;
-  min-height: 100vh;
-  font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap');
+
+:root {
+  font-family: 'DM Sans', 'Segoe UI', sans-serif;
+  color: #172b3a;
+  background: #f3f6f7;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  --ink: #172b3a;
+  --muted: #71808b;
+  --line: #e2e8eb;
+  --paper: #ffffff;
+  --canvas: #f3f6f7;
+  --navy: #102232;
+  --teal: #137c76;
+  --teal-dark: #0e6863;
+  --teal-soft: #e8f4f2;
+  --shadow-soft: 0 12px 34px rgba(19, 41, 56, 0.06);
 }
 
-/* Fondo animado eco-friendly (sin flexbox global para permitir scroll) */
-body {
-  background: linear-gradient(-45deg, #184e68, #57ca85, #2980b9, #6dd5ed);
-  background-size: 400% 400%;
-  animation: moverFondo 12s ease infinite;
-  overflow-y: auto; /* Permite el scroll vertical normal */
-}
-
-/* Animación del fondo */
-@keyframes moverFondo {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-
-/* Contenedor exclusivo para centrar vistas cortas como Login y Registro */
-.auth-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  width: 100%;
-}
-
-/* Contenedor general para el Dashboard / Gráficas / Historial */
-.dashboard-container {
-  max-width: 1000px;
-  margin: 40px auto;
-  padding: 20px;
+* {
   box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  min-width: 320px;
+  min-height: 100%;
+  margin: 0;
+}
+
+body {
+  min-height: 100vh;
+  background: var(--canvas);
+}
+
+button,
+input,
+select {
+  font: inherit;
+}
+
+button,
+a,
+select {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible {
+  outline: 3px solid rgba(19, 124, 118, 0.3);
+  outline-offset: 2px;
+}
+
+::selection {
+  color: #102232;
+  background: #b9e1da;
 }
